@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Me perdonas? 🥺</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #ffe6f2 0%, #ffb3d9 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            overflow: hidden;
+        }
+        .tarjeta {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(255, 77, 148, 0.2);
+            width: 100%;
+            max-width: 400px;
+            transition: all 0.3s ease;
+        }
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            color: #ff3385;
+            font-size: 1.8rem;
+            margin: 10px 0;
+        }
+        p { color: #660033; font-size: 1rem; margin-bottom: 20px; }
+        .gif-container {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .gif-container img { max-height: 100%; border-radius: 15px; }
+        
+        /* Contenedor flexible para móviles */
+        .contenedor-botones {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button {
+            font-family: 'Fredoka One', cursive;
+            width: 80%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+        #btn-si { background-color: #ff3385; color: white; }
+        #btn-no { background-color: #999; color: white; }
+        
+        .oculto { display: none !important; }
+        .corazon {
+            position: absolute;
+            color: #ff3385;
+            animation: caer linear forwards;
+            z-index: 100;
+        }
+        @keyframes caer {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tarjeta" id="juego">
+        <div class="gif-container">
+            <img id="gif" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMml3YWtmemZ4M3ZkOW80ODl0NW0yNXkydmlmeTNvMDIyZ3VvdWF5OCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Up4R5to72EMLfeggzE/giphy.gif">
+        </div>
+        <h1 id="titulo">¿Me perdonas? 🥺</h1>
+        <p id="subtitulo">Prometo comprarte tu comida favorita si dices que sí.</p>
+        
+        <div class="contenedor-botones">
+            <button id="btn-si" onclick="celebrar()">¡Sí! ❤️</button>
+            <button id="btn-no" onclick="presionaNo()">No 💔</button>
+        </div>
+    </div>
+
+    <div class="tarjeta oculto" id="exito">
+        <div class="gif-container">
+            <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDZ6OWpjdGZvaTRkOWJ0NWtmamV2MXc3bjhxY3VnOXk1NnV4MG53dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/7Itkmm1CWfyTahEwfi/giphy.gif">
+        </div>
+        <h1>¡Sabiendo! 😍</h1>
+        <p>Has elegido la opción correcta. ¡Te amo muchísimo y ya mismo voy a llenarte de mimos! 💖</p>
+    </div>
+
+    <script>
+        let toques = 0;
+        const btnSi = document.getElementById('btn-si');
+        const btnNo = document.getElementById('btn-no');
+        const titulo = document.getElementById('titulo');
+        const gif = document.getElementById('gif');
+
+        const frases = [
+            "¿Segura? Reconsidéralo... 🥺",
+            "¿Ni por un chocolate gigante? 🍫",
+            "¡El botón de No se está rompiendo! 🔧",
+            "¡Ya casi ni se ve el No! Haz clic abajo 😂",
+            "¡Ríndete ya! Te amo ❤️"
+        ];
+
+        const gifs = [
+            "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmZ3amJmYTZtMXd6enZrbGl6ZWZybmI1Zm1iYmoxbm5uMnBidnNkZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/zJu2ClW68GXCHc9kct/giphy.gif",
+            "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdXM5cmR0MGN4bDRleHFnenhpaTdpdnd2eW8xcjN3OGZhaWlwbzhzNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/a8SFPV6RYtXo0kbvC5/giphy.gif",
+            "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnRkemo1NThkN3c0NDJ3ZWlraHl1c2V2cDJ1NTdzaXN0anZqZ212biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/m9X35geeBqPXSojElt/giphy.gif"
+        ];
+
+        function presionaNo() {
+            toques++;
+            
+            // El botón SI crece, el botón NO se encoge
+            let escalaSi = 1 + (toques * 0.35);
+            let escalaNo = Math.max(0.2, 1 - (toques * 0.2));
+            
+            btnSi.style.transform = `scale(${escalaSi})`;
+            btnNo.style.transform = `scale(${escalaNo})`;
+            
+            // Cambiar textos dinámicamente
+            if (toques <= frases.length) {
+                titulo.innerText = frases[toques - 1];
+            }
+            
+            // Cambiar el GIF para dar más lástima
+            if (toques % 2 !== 0) {
+                gif.src = gifs[Math.floor(Math.random() * gifs.length)];
+            }
+        }
+
+        function celebrar() {
+            document.getElementById('juego').classList.add('oculto');
+            document.getElementById('exito').classList.remove('oculto');
+            setInterval(crearCorazon, 150);
+        }
+
+        function crearCorazon() {
+            const corazon = document.createElement('div');
+            corazon.classList.add('corazon');
+            const modelos = ['❤️', '💖', '🥰', '✨'];
+            corazon.innerText = modelos[Math.floor(Math.random() * modelos.length)];
+            corazon.style.left = Math.random() * 100 + "vw";
+            corazon.style.animationDuration = Math.random() * 2 + 2 + "s";
+            corazon.style.fontSize = Math.random() * 20 + 20 + "px";
+            document.body.appendChild(corazon);
+            setTimeout(() => { corazon.remove(); }, 4000);
+        }
+    </script>
+</body>
+</html>
